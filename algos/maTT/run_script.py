@@ -157,7 +157,7 @@ def test(seed):
 
     # Load saved policy
     model_kwargs = dict(dim_hidden=args.hiddens)
-    model = core.DeepSetmodel(env.observation_space, env.action_space, **model_kwargs)
+    model = core.DeepSetModel2(env.observation_space, env.action_space, **model_kwargs)
     policy = load_pytorch_policy(args.log_dir, args.log_fname, model)
 
     # Testing environment
@@ -181,7 +181,7 @@ def testbehavior(seed):
 
     # Load saved policy
     model_kwargs = dict(dim_hidden=args.hiddens)
-    model = core_behavior.DeepSetmodel(env.observation_space, env.action_space, **model_kwargs)
+    model = core_behavior.DeepSetModel2(env.observation_space, env.action_space, **model_kwargs)
     policy = load_pytorch_policy(args.log_dir, args.log_fname, model)
 
     # Testing environment
