@@ -7,7 +7,7 @@ from torch.utils.tensorboard import SummaryWriter
 import gym
 from gym.spaces import Box, Discrete
 import time, os, random, pdb
-from utils.logSpinUp import EpochLogger
+# from utils.logSpinUp import EpochLogger
 import algos.maTT.core as core
 from algos.maTT.replay_buffer import ReplayBufferSet as ReplayBuffer
 
@@ -60,7 +60,7 @@ def test_agent(test_env, get_action, logger, num_test_episodes,
                 obs, rew, done, _ = test_env.step(action_dict)
                 ep_ret += rew['__all__']
                 ep_len += 1  
-            logger.store(TestEpRet=ep_ret)
+            # logger.store(TestEpRet=ep_ret)
 
 
 def doubleQlearning(env_fn, model=core.DeepSetmodel, model_kwargs=dict(), seed=0, 
@@ -171,8 +171,8 @@ def doubleQlearning(env_fn, model=core.DeepSetmodel, model_kwargs=dict(), seed=0
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
     torch.set_num_threads(torch_threads)
 
-    logger = EpochLogger(**logger_kwargs)
-    logger.save_config(locals())
+    # logger = EpochLogger(**logger_kwargs)
+    # logger.save_config(locals())
     writer = SummaryWriter(logger_kwargs['output_dir'])
 
     torch.manual_seed(seed)
@@ -200,7 +200,7 @@ def doubleQlearning(env_fn, model=core.DeepSetmodel, model_kwargs=dict(), seed=0
 
     # Count variables (protip: try to get a feel for how different size networks behave!)
     var_counts = tuple(core.count_vars(module) for module in [policy.q1, policy.q2])
-    logger.log('\nNumber of parameters: \t q1: %d, \t q2: %d\n'%var_counts)
+    #logger.log('\nNumber of parameters: \t q1: %d, \t q2: %d\n'%var_counts)
 
     # Set up optimizer
     q_optimizer = Adam(q_params, lr=lr)
@@ -291,7 +291,7 @@ def doubleQlearning(env_fn, model=core.DeepSetmodel, model_kwargs=dict(), seed=0
             q_optimizer.step()
 
         ## Record things
-        logger.store(LossQ=loss_q.item(), **q_info)
+        #logger.store(LossQ=loss_q.item(), **q_info)
 
         # Finally, update target networks by polyak averaging.
         with torch.no_grad():
@@ -313,6 +313,8 @@ def doubleQlearning(env_fn, model=core.DeepSetmodel, model_kwargs=dict(), seed=0
 
     # Main loop: collect experience in env and update/log each epoch
     for t in range(total_steps):
+        # if t%100 == 0:
+        #     print(f"Currently at step {t} out of {total_steps}")
         
         # Until start_steps have elapsed, randomly sample actions
         # from a uniform distribution for better exploration. Afterwards, 
@@ -346,7 +348,7 @@ def doubleQlearning(env_fn, model=core.DeepSetmodel, model_kwargs=dict(), seed=0
 
         # End of trajectory handling
         if done['__all__'] or (ep_len == max_ep_len):
-            logger.store(EpRet=ep_ret, EpLen=ep_len)
+            #logger.store(EpRet=ep_ret, EpLen=ep_len)
             ep_ret, ep_len = 0, 0
             obs = env.reset()
 
@@ -365,47 +367,49 @@ def doubleQlearning(env_fn, model=core.DeepSetmodel, model_kwargs=dict(), seed=0
         # End of epoch handling
         if (t+1) % steps_per_epoch == 0:
             epoch = (t+1) // steps_per_epoch
-            logger.log_tabular('Epoch', epoch)
-
+            #logger.log_tabular('Epoch', epoch)
+            
             # Test the performance of the deterministic version of the agent.
-            test_agent(test_env, get_action, logger, num_test_episodes, env.num_agents, env.num_targets)
+            test_agent(test_env, get_action, None, num_test_episodes, env.num_agents, env.num_targets)
             # Averages test ep returns
-            logger.log_tabular('TestEpRet', with_min_and_max=True)
+            #logger.log_tabular('TestEpRet', with_min_and_max=True)
 
             # Save model
-            # if (epoch % save_freq == 0) or (epoch == epochs):
-            #     torch.save(policy.state_dict(), fpath+'model%d.pt'%epoch)
-
-            # Save model based on best test episode return
-            if logger.log_current_row['AverageTestEpRet'] > best_test_ret:
-                logger.log('Saving model, AverageTestEpRet increase %d -> %d'%
-                            (best_test_ret, logger.log_current_row['AverageTestEpRet']))
-
+            if (epoch % save_freq == 0) or (epoch == epochs):
                 fpath = logger_kwargs['output_dir']+'/state_dict/'
                 os.makedirs(fpath, exist_ok=True)
-                torch.save(policy.state_dict(), fpath+'model.pt')
-                best_test_ret = logger.log_current_row['AverageTestEpRet']
+                torch.save(policy.state_dict(), fpath+'model%d.pt'%epoch)
+
+            # Save model based on best test episode return
+            # if logger.log_current_row['AverageTestEpRet'] > best_test_ret:
+            #     logger.log('Saving model, AverageTestEpRet increase %d -> %d'%
+            #                 (best_test_ret, logger.log_current_row['AverageTestEpRet']))
+
+            #     fpath = logger_kwargs['output_dir']+'/state_dict/'
+            #     os.makedirs(fpath, exist_ok=True)
+            #     torch.save(policy.state_dict(), fpath+'model.pt')
+            #     best_test_ret = logger.log_current_row['AverageTestEpRet']
 
 
             # Log info about epoch
-            logger.log_tabular('EpRet', with_min_and_max=True)
-            logger.log_tabular('EpLen', average_only=True)
-            logger.log_tabular('TotalEnvInteracts', t)
-            logger.log_tabular('Q1Vals', with_min_and_max=True)
-            logger.log_tabular('Q2Vals', with_min_and_max=True)
-            logger.log_tabular('LossQ', average_only=True)
-            logger.log_tabular('LR', q_optimizer.param_groups[0]['lr'])
-            logger.log_tabular('Time', time.time()-start_time)
+            # logger.log_tabular('EpRet', with_min_and_max=True)
+            # logger.log_tabular('EpLen', average_only=True)
+            # logger.log_tabular('TotalEnvInteracts', t)
+            # logger.log_tabular('Q1Vals', with_min_and_max=True)
+            # logger.log_tabular('Q2Vals', with_min_and_max=True)
+            # logger.log_tabular('LossQ', average_only=True)
+            # logger.log_tabular('LR', q_optimizer.param_groups[0]['lr'])
+            # logger.log_tabular('Time', time.time()-start_time)
 
             # Tensorboard logger
-            writer.add_scalar('AverageEpRet', logger.log_current_row['AverageEpRet'],t)
-            writer.add_scalar('AverageTestEpRet', logger.log_current_row['AverageTestEpRet'],t)
-            writer.add_scalar('AverageQ1Vals', logger.log_current_row['AverageQ1Vals'],t)
-            writer.add_scalar('AverageQ2Vals', logger.log_current_row['AverageQ2Vals'],t)
-            writer.add_scalar('HuberLossQ', logger.log_current_row['LossQ'],t)
-            writer.add_scalar('LearningRate', logger.log_current_row['LR'],t)
+            # writer.add_scalar('AverageEpRet', logger.log_current_row['AverageEpRet'],t)
+            # writer.add_scalar('AverageTestEpRet', logger.log_current_row['AverageTestEpRet'],t)
+            # writer.add_scalar('AverageQ1Vals', logger.log_current_row['AverageQ1Vals'],t)
+            # writer.add_scalar('AverageQ2Vals', logger.log_current_row['AverageQ2Vals'],t)
+            # writer.add_scalar('HuberLossQ', logger.log_current_row['LossQ'],t)
+            # writer.add_scalar('LearningRate', logger.log_current_row['LR'],t)
 
-            logger.dump_tabular()
+            # logger.dump_tabular()
 
 
             

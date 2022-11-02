@@ -77,6 +77,7 @@ class DeepSetAttention(nn.Module):
                 nn.Linear(dim_hidden, dim_output))
 
     # v(x)
+    #Aakash returns a q-table row (all q(x, a) for a given x and all a)
     def values(self, obs):
         v = self.enc(obs)
         v = v.sum(dim=1, keepdim=True)  #pooling mechanism: sum, mean, max
@@ -84,6 +85,7 @@ class DeepSetAttention(nn.Module):
         return v
 
     # q(x,a)
+    #Aakash returns the q-value for the specified action using torch.gather 
     def forward(self, obs, act):
         v = self.enc(obs)
         v = v.sum(dim=1, keepdim=True)  #pooling mechanism: sum, mean, max
@@ -91,24 +93,41 @@ class DeepSetAttention(nn.Module):
         q = torch.gather(v, 1, act)
         return q
 
-class DeepSetmodel(nn.Module):
+# class DeepSetmodel(nn.Module):
 
+#     def __init__(self, observation_space, action_space, dim_hidden=128):
+#         super().__init__()
+
+#         obs_dim = observation_space.shape[0]
+#         act_dim = action_space.n
+
+#         # build policy and value functions
+#         self.pi = SoftActionSelector(act_dim)
+#         self.q1 = DeepSetAttention(dim_input=obs_dim, dim_output=act_dim, dim_hidden=dim_hidden)
+#         self.q2 = DeepSetAttention(dim_input=obs_dim, dim_output=act_dim, dim_hidden=dim_hidden)
+
+#     def act(self, obs, deterministic=False):
+#         with torch.no_grad():
+#             v1 = self.q1.values(obs)
+#             v2 = self.q2.values(obs)
+
+#             a, _ = self.pi(v1+v2, deterministic, False)
+#             # Tensor to int
+#             return int(a)
+
+#Aakash removed double Q learning - trying to use only one q-network
+class DeepSetModel2(nn.Module):
     def __init__(self, observation_space, action_space, dim_hidden=128):
         super().__init__()
-
+        
         obs_dim = observation_space.shape[0]
         act_dim = action_space.n
-
-        # build policy and value functions
+        
         self.pi = SoftActionSelector(act_dim)
-        self.q1 = DeepSetAttention(dim_input=obs_dim, dim_output=act_dim, dim_hidden=dim_hidden)
-        self.q2 = DeepSetAttention(dim_input=obs_dim, dim_output=act_dim, dim_hidden=dim_hidden)
-
+        self.q = DeepSetAttention(dim_input=obs_dim, dim_output=act_dim, dim_hidden=dim_hidden)
+        
     def act(self, obs, deterministic=False):
         with torch.no_grad():
-            v1 = self.q1.values(obs)
-            v2 = self.q2.values(obs)
-
-            a, _ = self.pi(v1+v2, deterministic, False)
-            # Tensor to int
+            a, _ = self.pi(self.q.values(obs), deterministic, False)
             return int(a)
+    

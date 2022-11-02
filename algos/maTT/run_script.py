@@ -5,7 +5,7 @@ import torch.nn as nn
 import gym
 from gym import wrappers
 
-from algos.maTT.dql import doubleQlearning
+from algos.maTT.ql import Qlearning
 import algos.maTT.core as core
 
 import envs
@@ -85,9 +85,36 @@ def train(seed, save_dir):
     #Training function
     model_kwargs = dict(dim_hidden=args.hiddens)
     logger_kwargs = dict(output_dir=save_dir_0, exp_name=save_dir_0)
-    model = core.DeepSetmodel
+    # model = core.DeepSetmodel
+    model = core.DeepSetModel2
 
-    doubleQlearning(
+    # doubleQlearning(
+    #     env_fn=env_fn,
+    #     model=model,
+    #     model_kwargs=model_kwargs,
+    #     seed=seed, 
+    #     steps_per_epoch=args.steps_per_epoch, 
+    #     epochs=args.epochs, 
+    #     gamma=args.gamma,
+    #     polyak=args.polyak,
+    #     lr=args.learning_rate,
+    #     lr_period=args.learning_rate_period,
+    #     alpha=args.alpha, 
+    #     grad_clip=args.grad_clip,
+    #     batch_size=args.batch_size,
+    #     start_steps=args.start_steps, 
+    #     update_after=args.update_after,
+    #     num_test_episodes=args.num_eval_episodes,
+    #     replay_size=args.replay_size,
+    #     max_ep_len=args.max_ep_len,
+    #     logger_kwargs=logger_kwargs, 
+    #     save_freq=args.checkpoint_freq, 
+    #     render=bool(args.render),
+    #     torch_threads=args.torch_threads,
+    #     amp=bool(args.amp)
+    #     )
+    
+    Qlearning(
         env_fn=env_fn,
         model=model,
         model_kwargs=model_kwargs,
@@ -112,6 +139,7 @@ def train(seed, save_dir):
         torch_threads=args.torch_threads,
         amp=bool(args.amp)
         )
+    
 
 def test(seed):
     from algos.maTT.evaluation import Test, load_pytorch_policy
@@ -169,7 +197,8 @@ if __name__ == '__main__':
         else:
             ValueError("The directory already exists...", save_dir)
 
-        notes = input("Any notes for this experiment? : ")
+        #notes = input("Any notes for this experiment? : ")
+        notes = "Setting up baseline"
         f = open(os.path.join(save_dir, "notes.txt"), 'w')
         f.write(notes)
         f.close()

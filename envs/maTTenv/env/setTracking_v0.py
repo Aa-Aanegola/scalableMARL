@@ -8,7 +8,7 @@ from envs.maTTenv.agent_models import *
 from envs.maTTenv.belief_tracker import KFbelief
 from envs.maTTenv.metadata import METADATA
 from envs.maTTenv.env.maTracking_Base import maTrackingBase
-
+from math import inf
 """
 Target Tracking Environments for Reinforcement Learning.
 [Variables]
@@ -43,11 +43,11 @@ class setTrackingEnv0(maTrackingBase):
         self.id = 'setTracking-v0'
         self.nb_agents = num_agents #only for init, will change with reset()
         self.nb_targets = num_targets #only for init, will change with reset()
-        self.agent_dim = 3
+        self.agent_dim = 3 
         self.target_dim = 4
         self.target_init_vel = METADATA['target_init_vel']*np.ones((2,))
         # LIMIT
-        self.limit = {} # 0: low, 1:highs
+        self.limit = {} # 0: low, 1:highs Aakash - contains information on the bounds (spatial and velocity of different entities)
         self.limit['agent'] = [np.concatenate((self.MAP.mapmin,[-np.pi])), np.concatenate((self.MAP.mapmax, [np.pi]))]
         self.limit['target'] = [np.concatenate((self.MAP.mapmin,[-METADATA['target_vel_limit'], -METADATA['target_vel_limit']])),
                                 np.concatenate((self.MAP.mapmax, [METADATA['target_vel_limit'], METADATA['target_vel_limit']]))]
@@ -76,6 +76,7 @@ class setTrackingEnv0(maTrackingBase):
         self.get_reward()
 
     def setup_agents(self):
+        #Aakash Agents convert (v, w) commands into position updates
         self.agents = [AgentSE2(agent_id = 'agent-' + str(i), 
                         dim=self.agent_dim, sampling_period=self.sampling_period, 
                         limit=self.limit['agent'], 
@@ -83,6 +84,7 @@ class setTrackingEnv0(maTrackingBase):
                         for i in range(self.num_agents)]
 
     def setup_targets(self):
+        #Aakash Targets work on a double integrator system
         self.targets = [AgentDoubleInt2D(agent_id = 'target-' + str(i),
                         dim=self.target_dim, sampling_period=self.sampling_period, 
                         limit=self.limit['target'],
@@ -91,14 +93,16 @@ class setTrackingEnv0(maTrackingBase):
                         for i in range(self.num_targets)]
 
     def setup_belief_targets(self):
+        #Aakash We don't have access to true target location, so the belief is used
         self.belief_targets = [KFbelief(agent_id = 'target-' + str(i),
                         dim=self.target_dim, limit=self.limit['target'], A=self.targetA,
                         W=self.target_noise_cov, obs_noise_func=self.observation_noise, 
                         collision_func=lambda x: map_utils.is_collision(self.MAP, x))
                         for i in range(self.num_targets)]
 
-    def get_reward(self, observed=None, is_training=True):
-        return reward_fun(self.nb_targets, self.belief_targets, is_training)
+    def get_reward(self, observed=None, is_training=True, all_states=None):
+        # return reward_fun(self.nb_targets, self.belief_targets, is_training, 0.1)
+        return reward_fun2(self.nb_targets, self.belief_targets, is_training, 0.1, all_states)
 
     def reset(self,**kwargs):
         """
@@ -107,6 +111,7 @@ class setTrackingEnv0(maTrackingBase):
         Return an observation state dict with agent ids (keys) that refer to their observation
         """
         self.rng = np.random.default_rng()
+        #Aakash Setting number of agents
         try: 
             self.nb_agents = kwargs['nb_agents']
             self.nb_targets = kwargs['nb_targets']
@@ -139,6 +144,7 @@ class setTrackingEnv0(maTrackingBase):
         return obs_dict
 
     def step(self, action_dict):
+        #Aakash action_dict contains all the actions of all the agents
         obs_dict = {}
         reward_dict = {}
         done_dict = {'__all__':False}
@@ -146,23 +152,27 @@ class setTrackingEnv0(maTrackingBase):
 
         # Targets move (t -> t+1)
         for n in range(self.nb_targets):
-            self.targets[n].update() 
+            self.targets[n].update() #Aakash deterministically move all the targets based on their random control input  
             self.belief_targets[n].predict() # Belief state at t+1
         # Agents move (t -> t+1) and observe the targets
+        all_states = []
         for ii, agent_id in enumerate(action_dict):
             obs_dict[self.agents[ii].agent_id] = []
             reward_dict[self.agents[ii].agent_id] = []
             done_dict[self.agents[ii].agent_id] = []
 
+            #Aakash the action is mapped to the ID based on the Gym framework
             action_vw = self.action_map[action_dict[agent_id]]
 
             # Locations of all targets and agents in order to maintain a margin between them
             margin_pos = [t.state[:2] for t in self.targets[:self.nb_targets]]
+            no_target_margins = [self.agents[ii].state[:2]]
             for p, ids in enumerate(action_dict):
                 if agent_id != ids:
-                    margin_pos.append(np.array(self.agents[p].state[:2]))
-            _ = self.agents[ii].update(action_vw, margin_pos)
-            
+                    margin_pos.append(np.array(self.agents[p].state[:2])) #Aakash Store the location of the agent, minimum threshold
+                    no_target_margins.append(np.array(self.agents[p].state[:2]))
+            _ = self.agents[ii].update(action_vw, margin_pos) #Aakash Update the position of the agent based on the control 
+            all_states.append(no_target_margins)
             # Target and map observations
             observed = np.zeros(self.nb_targets, dtype=bool)
 
@@ -171,6 +181,7 @@ class setTrackingEnv0(maTrackingBase):
                 # Observe
                 obs, z_t = self.observation(self.targets[jj], self.agents[ii])
                 observed[jj] = obs
+                #Aakash using KF propogate noise - update the belief
                 if obs: # if observed, update the target belief.
                     self.belief_targets[jj].update(z_t, self.agents[ii].state)
 
@@ -185,14 +196,16 @@ class setTrackingEnv0(maTrackingBase):
                 obs_dict[agent_id].append([r_b, alpha_b, r_dot_b, alpha_dot_b,
                                         np.log(LA.det(self.belief_targets[jj].cov)), float(obs)])
             obs_dict[agent_id] = np.asarray(obs_dict[agent_id])
-            # shuffle obs to promote permutation invariance
+            # Aakash shuffle obs to promote permutation invariance
             self.rng.shuffle(obs_dict[agent_id])
         # Get all rewards after all agents and targets move (t -> t+1)
-        reward, done, mean_nlogdetcov = self.get_reward(observed, self.is_training)
+        #Aakash use the BELIEF to calculate the reward
+        reward, done, mean_nlogdetcov = self.get_reward(observed, self.is_training, all_states)
         reward_dict['__all__'], done_dict['__all__'], info_dict['mean_nlogdetcov'] = reward, done, mean_nlogdetcov
         return obs_dict, reward_dict, done_dict, info_dict
 
 def reward_fun(nb_targets, belief_targets, is_training=True, c_mean=0.1):
+    #Aakash try to minimize the mean of the log of the determinant of the covariance matrix - minimizes uncertainty
     detcov = [LA.det(b_target.cov) for b_target in belief_targets[:nb_targets]]
     r_detcov_mean = - np.mean(np.log(detcov))
     reward = c_mean * r_detcov_mean
@@ -201,4 +214,28 @@ def reward_fun(nb_targets, belief_targets, is_training=True, c_mean=0.1):
     if not(is_training):
         logdetcov = [np.log(LA.det(b_target.cov)) for b_target in belief_targets[:nb_targets]]
         mean_nlogdetcov = -np.mean(logdetcov)
+    return reward, False, mean_nlogdetcov
+
+def reward_fun2(nb_targets, belief_targets, is_training=True, c_mean=0.1, all_states=None):
+    detcov = [LA.det(b_target.cov) for b_target in belief_targets[:nb_targets]]
+    r_detcov_mean = - np.mean(np.log(detcov))
+    reward = c_mean * r_detcov_mean
+
+    mean_nlogdetcov = None
+    if not(is_training):
+        logdetcov = [np.log(LA.det(b_target.cov)) for b_target in belief_targets[:nb_targets]]
+        mean_nlogdetcov = -np.mean(logdetcov)
+
+    if all_states is not None:
+        agent_closeness_reward = 0
+        for ii in range(len(all_states)):
+            agent_state = np.array(all_states[ii][0])
+            closest = None
+            for jj in range(len(all_states[ii][1:])):
+                if closest is None:
+                    closest = np.array(all_states[ii][jj])
+                if np.linalg.norm(np.array(agent_state)-np.array(all_states[ii][jj])) < np.linalg.norm(agent_state-closest):
+                    closest = np.array(all_states[ii][jj])
+            if closest is not None:
+               agent_closeness_reward -= 0.01/(0.1 + np.linalg.norm(closest-agent_state))
     return reward, False, mean_nlogdetcov

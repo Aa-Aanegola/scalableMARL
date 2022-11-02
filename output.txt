@@ -1,0 +1,10 @@
+==========================================
+SLURM_JOB_ID = 787307
+SLURM_NODELIST = gnode046
+SLURM_JOB_GPUS = 0
+==========================================
+/home2/aa_aanegola/scalableMARL/envs/maTTenv/maps/map_utils.py:24: UserWarning: loadtxt: Empty input file: "/home2/aa_aanegola/scalableMARL/envs/maTTenv/maps/emptyMed.cfg"
+  self.map = np.loadtxt(map_path+".cfg")
+/home2/aa_aanegola/miniconda3/envs/scalableMARL/lib/python3.8/site-packages/gym/spaces/box.py:127: UserWarning: [33mWARN: Box bound precision lowered by casting to float32[0m
+  logger.warn(f"Box bound precision lowered by casting to {self.dtype}")
+===== TRAIN A TARGET TRACKING RL AGENT : SEED 0 =====

@@ -29,7 +29,7 @@ class Agent(object):
 
     def range_check(self):
         self.state = np.clip(self.state, self.limit[0], self.limit[1])
-
+        
     def collision_check(self, pos):
         return self.collision_func(pos[:2])
 
@@ -38,6 +38,7 @@ class Agent(object):
 
     def reset(self, init_state):
         self.state = init_state
+    
 
 class AgentSE2(Agent):
     def __init__(self, agent_id, dim, sampling_period, limit, collision_func, 

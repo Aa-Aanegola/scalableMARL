@@ -1,6 +1,7 @@
 import datetime, json, os, argparse, time
 import pickle, tabulate
 import matplotlib
+matplotlib.use('TKAgg')
 from matplotlib import pyplot as plt
 import numpy as np
 import os.path as osp
@@ -160,5 +161,5 @@ SET_EVAL_v0 = [
         # {'nb_agents': 1, 'nb_targets': 4},
         # {'nb_agents': 2, 'nb_targets': 4},
         # {'nb_agents': 3, 'nb_targets': 4},
-        {'nb_agents': 20, 'nb_targets': 20},
+        {'nb_agents': 4, 'nb_targets': 4},
 ]
