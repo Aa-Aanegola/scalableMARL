@@ -159,8 +159,8 @@ def Qlearning(env_fn, model=core.DeepSetModel2, model_kwargs=dict(), seed=0,
     obs = env.reset()
 
     for t in range(total_steps):
-        # if t%100 == 0:
-        #     print(f"Currently at step {t} out of {total_steps}")
+        #if t%100 == 0:
+        #    print(f"Currently at step {t} out of {total_steps}")
 
         action_dict = {}
         if t > start_steps:

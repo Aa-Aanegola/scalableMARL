@@ -101,8 +101,8 @@ class setTrackingEnv0(maTrackingBase):
                         for i in range(self.num_targets)]
 
     def get_reward(self, observed=None, is_training=True, all_states=None):
-        # return reward_fun(self.nb_targets, self.belief_targets, is_training, 0.1)
-        return reward_fun2(self.nb_targets, self.belief_targets, is_training, 0.1, all_states)
+        return reward_fun(self.nb_targets, self.belief_targets, is_training, 0.1)
+        # return reward_fun2(self.nb_targets, self.belief_targets, is_training, 0.1, all_states)
 
     def reset(self,**kwargs):
         """
