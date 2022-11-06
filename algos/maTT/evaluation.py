@@ -103,8 +103,8 @@ class Test:
 
             if args.record :
                 env.moviewriter.finish()
-            if args.ros_log :
-                ros_log.save(args.log_dir)
+            # if args.ros_log :
+            #     ros_log.save(args.log_dir)
 
             # Stats
             meanofeps = np.mean(ep_nlogdetcov)
@@ -161,5 +161,6 @@ SET_EVAL_v0 = [
         # {'nb_agents': 1, 'nb_targets': 4},
         # {'nb_agents': 2, 'nb_targets': 4},
         # {'nb_agents': 3, 'nb_targets': 4},
-        {'nb_agents': 4, 'nb_targets': 4},
+        # {'nb_agents': 4, 'nb_targets': 4},
+        {'nb_agents':4, 'nb_targets': 4}
 ]

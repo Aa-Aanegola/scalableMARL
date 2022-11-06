@@ -12,3 +12,5 @@
 
 source setup
 python3 algos/maTT/run_script.py --seed 0 --log_dir ./results/dql-newrew --epochs 40
+
+# python3 algos/maTT/run_script.py --mode test --render 1 --log_dir ./results/maTT/setTracking-v0_123456789/seed_0/ --nb_test_eps 50

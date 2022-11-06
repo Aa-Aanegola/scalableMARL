@@ -100,9 +100,9 @@ class TestBehavior:
         while( not hasattr(timelimit_env, '_elapsed_steps')):
             timelimit_env = timelimit_env.env
 
-        if args.ros_log:
-            from envs.target_tracking.ros_wrapper import RosLog
-            ros_log = RosLog(num_targets=args.nb_targets, wrapped_num=args.ros + args.render + args.record + 1)
+        # if args.ros_log:
+        #     from envs.target_tracking.ros_wrapper import RosLog
+        #     ros_log = RosLog(num_targets=args.nb_targets, wrapped_num=args.ros + args.render + args.record + 1)
 
         init_pose_list = get_init_pose_list(args.nb_test_eps, args.eval_type)
 
@@ -129,8 +129,8 @@ class TestBehavior:
                 while ep_len < tot_eplen:
                     if args.render:
                         env.render()
-                    if args.ros_log:
-                        ros_log.log(env)
+                    # if args.ros_log:
+                    #     ros_log.log(env)
                     action_dict = {}
                     q_dict = {}
                     for agent_id, o in obs.items():
@@ -172,8 +172,8 @@ class TestBehavior:
 
             if args.record :
                 env.moviewriter.finish()
-            if args.ros_log :
-                ros_log.save(args.log_dir)
+            # if args.ros_log :
+            #     ros_log.save(args.log_dir)
 
             print(test_observations)
             print("Cooperation ratio over total evals: %.2f"%(np.sum(test_observations)/args.nb_test_eps))
