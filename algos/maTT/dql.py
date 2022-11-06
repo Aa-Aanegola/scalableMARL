@@ -313,8 +313,8 @@ def doubleQlearning(env_fn, model=core.DeepSetmodel, model_kwargs=dict(), seed=0
 
     # Main loop: collect experience in env and update/log each epoch
     for t in range(total_steps):
-        # if t%100 == 0:
-        #     print(f"Currently at step {t} out of {total_steps}")
+        if t%100 == 0:
+            print(f"Currently at step {t} out of {total_steps}")
         
         # Until start_steps have elapsed, randomly sample actions
         # from a uniform distribution for better exploration. Afterwards, 

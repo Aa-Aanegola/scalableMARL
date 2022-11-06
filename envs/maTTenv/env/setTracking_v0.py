@@ -101,8 +101,8 @@ class setTrackingEnv0(maTrackingBase):
                         for i in range(self.num_targets)]
 
     def get_reward(self, observed=None, is_training=True, all_states=None):
-        return reward_fun(self.nb_targets, self.belief_targets, is_training, 0.1)
-        # return reward_fun2(self.nb_targets, self.belief_targets, is_training, 0.1, all_states)
+        # return reward_fun(self.nb_targets, self.belief_targets, is_training, 0.1)
+        return reward_fun2(self.nb_targets, self.belief_targets, is_training, 0.1, all_states)
 
     def reset(self,**kwargs):
         """
@@ -237,5 +237,5 @@ def reward_fun2(nb_targets, belief_targets, is_training=True, c_mean=0.1, all_st
                 if np.linalg.norm(np.array(agent_state)-np.array(all_states[ii][jj])) < np.linalg.norm(agent_state-closest):
                     closest = np.array(all_states[ii][jj])
             if closest is not None:
-               agent_closeness_reward -= 0.01/(0.1 + np.linalg.norm(closest-agent_state))
+               agent_closeness_reward -= 0.05/(0.1 + np.linalg.norm(closest-agent_state))
     return reward, False, mean_nlogdetcov

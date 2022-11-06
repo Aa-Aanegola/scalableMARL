@@ -6,6 +6,7 @@ import gym
 from gym import wrappers
 
 from algos.maTT.ql import Qlearning
+from algos.maTT.dql import doubleQlearning
 import algos.maTT.core as core
 
 import envs
@@ -33,7 +34,7 @@ parser.add_argument('--nb_agents', type=int, default=4)
 parser.add_argument('--nb_targets', type=int, default=4)
 parser.add_argument('--seed', help='RNG seed', type=int, default=0)
 parser.add_argument('--mode', choices=['train', 'test', 'test-behavior'], default='train')
-parser.add_argument('--steps_per_epoch', type=int, default=10000)
+parser.add_argument('--steps_per_epoch', type=int, default=5000)
 parser.add_argument('--epochs', type=int, default=20)
 parser.add_argument('--batch_size', type=int, default=256)
 parser.add_argument('--alpha', type=float, default=0.4)
