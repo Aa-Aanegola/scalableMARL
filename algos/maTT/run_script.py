@@ -86,36 +86,10 @@ def train(seed, save_dir):
     #Training function
     model_kwargs = dict(dim_hidden=args.hiddens)
     logger_kwargs = dict(output_dir=save_dir_0, exp_name=save_dir_0)
-    model = core.DeepSetmodel
-    # model = core.DeepSetModel2
+    # model = core.DeepSetmodel
+    model = core.DeepSetModel2
 
-    doubleQlearning(
-        env_fn=env_fn,
-        model=model,
-        model_kwargs=model_kwargs,
-        seed=seed, 
-        steps_per_epoch=args.steps_per_epoch, 
-        epochs=args.epochs, 
-        gamma=args.gamma,
-        polyak=args.polyak,
-        lr=args.learning_rate,
-        lr_period=args.learning_rate_period,
-        alpha=args.alpha, 
-        grad_clip=args.grad_clip,
-        batch_size=args.batch_size,
-        start_steps=args.start_steps, 
-        update_after=args.update_after,
-        num_test_episodes=args.num_eval_episodes,
-        replay_size=args.replay_size,
-        max_ep_len=args.max_ep_len,
-        logger_kwargs=logger_kwargs, 
-        save_freq=args.checkpoint_freq, 
-        render=bool(args.render),
-        torch_threads=args.torch_threads,
-        amp=bool(args.amp)
-        )
-    
-    # Qlearning(
+    # doubleQlearning(
     #     env_fn=env_fn,
     #     model=model,
     #     model_kwargs=model_kwargs,
@@ -141,6 +115,32 @@ def train(seed, save_dir):
     #     amp=bool(args.amp)
     #     )
     
+    Qlearning(
+        env_fn=env_fn,
+        model=model,
+        model_kwargs=model_kwargs,
+        seed=seed, 
+        steps_per_epoch=args.steps_per_epoch, 
+        epochs=args.epochs, 
+        gamma=args.gamma,
+        polyak=args.polyak,
+        lr=args.learning_rate,
+        lr_period=args.learning_rate_period,
+        alpha=args.alpha, 
+        grad_clip=args.grad_clip,
+        batch_size=args.batch_size,
+        start_steps=args.start_steps, 
+        update_after=args.update_after,
+        num_test_episodes=args.num_eval_episodes,
+        replay_size=args.replay_size,
+        max_ep_len=args.max_ep_len,
+        logger_kwargs=logger_kwargs, 
+        save_freq=args.checkpoint_freq, 
+        render=bool(args.render),
+        torch_threads=args.torch_threads,
+        amp=bool(args.amp)
+        )
+    
 
 def test(seed):
     from algos.maTT.evaluation import Test, load_pytorch_policy
@@ -158,7 +158,8 @@ def test(seed):
 
     # Load saved policy
     model_kwargs = dict(dim_hidden=args.hiddens)
-    model = core.DeepSetmodel(env.observation_space, env.action_space, **model_kwargs)
+    # model = core.DeepSetmodel(env.observation_space, env.action_space, **model_kwargs)
+    model = core.DeepSetModel2(env.observation_space, env.action_space, **model_kwargs)
     policy = load_pytorch_policy(args.log_dir, args.log_fname, model)
 
     # Testing environment
@@ -182,7 +183,8 @@ def testbehavior(seed):
 
     # Load saved policy
     model_kwargs = dict(dim_hidden=args.hiddens)
-    model = core_behavior.DeepSetModel(env.observation_space, env.action_space, **model_kwargs)
+    # model = core_behavior.DeepSetmodel(env.observation_space, env.action_space, **model_kwargs)
+    model = core_behavior.DeepSetModel2(env.observation_space, env.action_space, **model_kwargs)
     policy = load_pytorch_policy(args.log_dir, args.log_fname, model)
 
     # Testing environment
