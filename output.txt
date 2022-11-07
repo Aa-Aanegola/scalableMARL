@@ -1,11 +1,12 @@
+==========================================
+SLURM_JOB_ID = 790934
+SLURM_NODELIST = gnode016
+SLURM_JOB_GPUS = 0
+==========================================
 /home2/aa_aanegola/scalableMARL/envs/maTTenv/maps/map_utils.py:24: UserWarning: loadtxt: Empty input file: "/home2/aa_aanegola/scalableMARL/envs/maTTenv/maps/emptyMed.cfg"
   self.map = np.loadtxt(map_path+".cfg")
 /home2/aa_aanegola/miniconda3/envs/scalableMARL/lib/python3.8/site-packages/gym/spaces/box.py:127: UserWarning: [33mWARN: Box bound precision lowered by casting to float32[0m
   logger.warn(f"Box bound precision lowered by casting to {self.dtype}")
-/home2/aa_aanegola/miniconda3/envs/scalableMARL/lib/python3.8/site-packages/torch/cuda/__init__.py:83: UserWarning: CUDA initialization: CUDA unknown error - this may be due to an incorrectly set up environment, e.g. changing env variable CUDA_VISIBLE_DEVICES after program start. Setting the available devices to be zero. (Triggered internally at  /opt/conda/conda-bld/pytorch_1659484810403/work/c10/cuda/CUDAFunctions.cpp:109.)
-  return torch._C._cuda_getDeviceCount() > 0
-/home2/aa_aanegola/miniconda3/envs/scalableMARL/lib/python3.8/site-packages/torch/amp/autocast_mode.py:198: UserWarning: User provided device_type of 'cuda', but CUDA is not available. Disabling
-  warnings.warn('User provided device_type of \'cuda\', but CUDA is not available. Disabling')
 ===== TRAIN A TARGET TRACKING RL AGENT : SEED 0 =====
 Currently at step 0 out of 200000
 Currently at step 100 out of 200000
@@ -2007,3 +2008,13 @@ Currently at step 199600 out of 200000
 Currently at step 199700 out of 200000
 Currently at step 199800 out of 200000
 Currently at step 199900 out of 200000
+/home2/aa_aanegola/scalableMARL/envs/maTTenv/maps/map_utils.py:24: UserWarning: loadtxt: Empty input file: "/home2/aa_aanegola/scalableMARL/envs/maTTenv/maps/emptyMed.cfg"
+  self.map = np.loadtxt(map_path+".cfg")
+/home2/aa_aanegola/miniconda3/envs/scalableMARL/lib/python3.8/site-packages/gym/spaces/box.py:127: UserWarning: [33mWARN: Box bound precision lowered by casting to float32[0m
+  logger.warn(f"Box bound precision lowered by casting to {self.dtype}")
+Ep.50 - Episode reward : 430.21, Episode nLogDetCov : 4302.14
+/home2/aa_aanegola/scalableMARL/envs/maTTenv/maps/map_utils.py:24: UserWarning: loadtxt: Empty input file: "/home2/aa_aanegola/scalableMARL/envs/maTTenv/maps/emptyMed.cfg"
+  self.map = np.loadtxt(map_path+".cfg")
+/home2/aa_aanegola/miniconda3/envs/scalableMARL/lib/python3.8/site-packages/gym/spaces/box.py:127: UserWarning: [33mWARN: Box bound precision lowered by casting to float32[0m
+  logger.warn(f"Box bound precision lowered by casting to {self.dtype}")
+Ep.50 - Episode reward : 497.38, Episode nLogDetCov : 4973.82
