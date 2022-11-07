@@ -3,3 +3,18 @@ SLURM_JOB_ID = 791474
 SLURM_NODELIST = gnode016
 SLURM_JOB_GPUS = 2
 ==========================================
+/home2/aa_aanegola/scalableMARL/envs/maTTenv/maps/map_utils.py:24: UserWarning: loadtxt: Empty input file: "/home2/aa_aanegola/scalableMARL/envs/maTTenv/maps/emptyMed.cfg"
+  self.map = np.loadtxt(map_path+".cfg")
+/home2/aa_aanegola/miniconda3/envs/scalableMARL/lib/python3.8/site-packages/gym/spaces/box.py:127: UserWarning: [33mWARN: Box bound precision lowered by casting to float32[0m
+  logger.warn(f"Box bound precision lowered by casting to {self.dtype}")
+===== TRAIN A TARGET TRACKING RL AGENT : SEED 0 =====
+/home2/aa_aanegola/scalableMARL/envs/maTTenv/maps/map_utils.py:24: UserWarning: loadtxt: Empty input file: "/home2/aa_aanegola/scalableMARL/envs/maTTenv/maps/emptyMed.cfg"
+  self.map = np.loadtxt(map_path+".cfg")
+/home2/aa_aanegola/miniconda3/envs/scalableMARL/lib/python3.8/site-packages/gym/spaces/box.py:127: UserWarning: [33mWARN: Box bound precision lowered by casting to float32[0m
+  logger.warn(f"Box bound precision lowered by casting to {self.dtype}")
+Ep.50 - Episode reward : 386.68, Episode nLogDetCov : 3866.80
+/home2/aa_aanegola/scalableMARL/envs/maTTenv/maps/map_utils.py:24: UserWarning: loadtxt: Empty input file: "/home2/aa_aanegola/scalableMARL/envs/maTTenv/maps/emptyMed.cfg"
+  self.map = np.loadtxt(map_path+".cfg")
+/home2/aa_aanegola/miniconda3/envs/scalableMARL/lib/python3.8/site-packages/gym/spaces/box.py:127: UserWarning: [33mWARN: Box bound precision lowered by casting to float32[0m
+  logger.warn(f"Box bound precision lowered by casting to {self.dtype}")
+Ep.50 - Episode reward : 429.92, Episode nLogDetCov : 4299.23
